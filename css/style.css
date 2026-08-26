@@ -433,3 +433,138 @@ color:#6f2cff;
     0%,100%{transform:scale(1);}
     50%{transform:scale(1.2);}
 }
+
+/* Google Drive Dynamic Gallery */
+.google-drive-section {
+    padding-top: 20px;
+}
+
+.drive-gallery-subtitle {
+    text-align: center;
+    color: #6f2cff;
+    margin: 0 auto 30px;
+}
+
+.google-drive-item {
+    min-height: 0;
+}
+
+.google-drive-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.drive-gallery-loading,
+.drive-gallery-empty,
+.drive-gallery-error {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 30px 15px;
+    color: #6f2cff;
+    font-weight: 600;
+}
+
+/* VIDEO GALLERY DESIGN: 4 large thumbnails per row */
+#googleDriveVideoGallery.gallery-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px;
+}
+
+#googleDriveVideoGallery .google-drive-video-item {
+    width: 100%;
+}
+
+#googleDriveVideoGallery .google-drive-video-preview {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+}
+
+/* Video gallery responsive layout */
+@media (max-width: 992px) {
+    #googleDriveVideoGallery.gallery-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    #googleDriveVideoGallery.gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* VIDEO GALLERY: match image-card sizing, 5 per row */
+#googleDriveVideoGallery.gallery-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 18px;
+}
+
+#googleDriveVideoGallery .google-drive-video-item {
+    width: 100%;
+}
+
+#googleDriveVideoGallery .google-drive-video-preview {
+    width: 100%;
+    aspect-ratio: auto;
+    background: #000;
+}
+
+@media (max-width: 1200px) {
+    #googleDriveVideoGallery.gallery-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    #googleDriveVideoGallery.gallery-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 576px) {
+    #googleDriveVideoGallery.gallery-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* VIDEO GALLERY: exact image-card visual size, 5 per row */
+#googleDriveVideoGallery.gallery-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+}
+
+#googleDriveVideoGallery .google-drive-video-item {
+    width: 100%;
+    border: 2px solid #6f2cff;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+#googleDriveVideoGallery .google-drive-video-preview {
+    width: 100%;
+    aspect-ratio: 9 / 16 !important;
+    position: relative;
+    overflow: hidden;
+    background: #000;
+}
+
+#googleDriveVideoGallery .google-drive-video-preview iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0;
+}
+
+@media (max-width: 992px) {
+    #googleDriveVideoGallery.gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 576px) {
+    #googleDriveVideoGallery.gallery-grid {
+        grid-template-columns: 1fr;
+    }
+}
