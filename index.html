@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aish Fatima's Reviews</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body>
+
+
+<!-- Header -->
+<nav class="navbar-custom">
+    <div class="container">
+        <div class="header-wrapper">
+
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-regular fa-image"></i>
+                </div>
+
+                <h2>
+                    <span>Aish Fatima's</span> Reviews 💜
+                </h2>
+            </div>
+
+            <button class="menu-btn" onclick="openMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+        </div>
+    </div>
+</nav>
+
+<!-- Hero -->
+
+<section class="hero-section">
+
+    <div class="overlay"></div>
+
+    <!-- Floating Bubbles -->
+    <div class="bubbles">
+        <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <div class="container text-center hero-content">
+
+        <h1 class="animated-title">
+            Success Gallery 💜
+        </h1>
+
+        <p class="animated-text">
+            <b>Trusted by 1000+ Women</b><br><br>
+
+Read authentic reviews and success stories from women who transformed their skills into confidence and opportunities.
+        </p>
+
+    </div>
+
+</section>
+
+<!-- Gallery -->
+<section class="gallery-section">
+    <div class="container">
+
+        <center><b><h1>Real Success Stories 💜</h1></b></center><br><br>
+
+        <div id="googleDriveGallery" class="gallery-grid">
+            <div class="drive-gallery-loading">Loading success stories...</div>
+        </div>
+
+        <div id="googleDriveGalleryError" class="drive-gallery-error" hidden>
+            Unable to load images right now. Please refresh the page.
+        </div>
+
+    </div>
+</section>
+
+<footer class="footer">
+
+<h3>
+<span>Feedback</span> Gallery
+</h3>
+
+<p>
+© 2026. Built with <span class="purple-heart">❤</span> by<br>
+<a href="#">Safa Technology</a>
+</p>
+
+</footer>
+
+<!-- Sidebar -->
+
+<div class="sidebar" id="sidebar">
+
+<button class="close-btn" onclick="closeMenu()">
+✕
+</button>
+
+<a href="index.html">
+<i class="fa-regular fa-image"></i>
+Image Gallery 💜
+</a>
+
+<a href="videos.html">
+<i class="fa-solid fa-video"></i>
+Video Gallery 💜
+</a>
+
+</div>
+
+<script src="js/script.js"></script>
+<script src="js/google-drive-gallery.js"></script>
+
+</body>
+</html>
