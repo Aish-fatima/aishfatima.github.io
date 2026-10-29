@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Upload | Aish Fatima's Reviews</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+.upload-panel{max-width:680px;margin:48px auto;padding:28px;background:#fff;border:2px solid #eadfff;border-radius:16px;box-shadow:0 8px 28px rgba(111,44,255,.08)}
+.upload-panel h1,.upload-panel h2{color:#6f2cff}.upload-panel .btn-primary{background:#6f2cff;border-color:#6f2cff}.upload-status{white-space:pre-wrap}.hidden{display:none!important}
+</style>
+</head>
+<body>
+<nav class="navbar-custom"><div class="container"><div class="header-wrapper"><div class="logo-area"><div class="logo-icon"><i class="fa-regular fa-image"></i></div><h2><span>Aish Fatima's</span> Reviews 💜</h2></div><a href="index.html" aria-label="Back to gallery" style="color:#6f2cff"><i class="fa-solid fa-house"></i> Gallery</a></div></div></nav>
+<main class="container"><section class="upload-panel">
+<h1 class="h3 mb-2">Client Upload Dashboard 💜</h1><p>Sign in to add photos and videos to the live gallery.</p>
+<div id="setupWarning" class="alert alert-warning hidden"></div>
+<form id="loginForm">
+<div class="mb-3"><label class="form-label" for="email">Client email / ID</label><input class="form-control" id="email" type="email" autocomplete="username" required></div>
+<div class="mb-3"><label class="form-label" for="password">Password</label><input class="form-control" id="password" type="password" autocomplete="current-password" required></div>
+<button class="btn btn-primary" type="submit">Login</button>
+</form>
+<div id="uploadArea" class="hidden mt-4">
+<div class="d-flex justify-content-between align-items-center gap-2 mb-3"><h2 class="h5 mb-0">Upload media</h2><button id="logoutBtn" class="btn btn-outline-secondary btn-sm" type="button">Log out</button></div>
+<form id="uploadForm"><div class="mb-3"><label class="form-label" for="mediaFiles">Choose photos/videos</label><input class="form-control" id="mediaFiles" type="file" accept="image/*,video/*" multiple required><div class="form-text">Upload one or more files. Keep video sizes reasonable for your storage plan.</div></div><button class="btn btn-primary" type="submit">Upload and publish</button></form>
+</div><div id="status" class="upload-status mt-3" role="status" aria-live="polite"></div>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="js/supabase-config.js"></script><script src="js/admin-upload.js"></script>
+</body></html>
