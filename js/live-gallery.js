@@ -1,5 +1,4 @@
-/* Appends newly uploaded Supabase media to existing Google Drive galleries;
-   the original gallery scripts and design are retained. */
+/* Displays only media uploaded to Supabase. Google Drive fetching is disabled. */
 (async function(){
  const url=window.SUPABASE_URL,key=window.SUPABASE_ANON_KEY;
  if(!window.supabase||!url||!key||url.includes('PASTE_')||key.includes('PASTE_'))return;
