@@ -44,3 +44,14 @@ create policy "Authenticated client can upload gallery media files" on storage.o
 for insert to authenticated with check (bucket_id = 'gallery-media');
 
 -- No delete policy is created. Disable public sign-ups and keep only the intended client account.
+
+
+-- Allow the authenticated client account to delete media through the admin dashboard.
+-- Keep public sign-ups disabled so only the intended account can use these permissions.
+drop policy if exists "Authenticated client can delete gallery media" on public.gallery_media;
+create policy "Authenticated client can delete gallery media" on public.gallery_media
+for delete to authenticated using (true);
+
+drop policy if exists "Authenticated client can delete gallery media files" on storage.objects;
+create policy "Authenticated client can delete gallery media files" on storage.objects
+for delete to authenticated using (bucket_id = 'gallery-media');
