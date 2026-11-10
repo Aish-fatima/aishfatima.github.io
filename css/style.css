@@ -679,3 +679,112 @@ color:#6f2cff;
     }
 }
 
+/* Floating video-feedback hint beside the hamburger menu */
+.header-wrapper {
+    position: relative;
+}
+
+.menu-hint {
+    position: absolute;
+    top: 68px;
+    right: 0;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 17px 11px 12px;
+    max-width: 285px;
+    color: #30205f;
+    background: rgba(255,255,255,.97);
+    border: 1.5px solid #8b61e8;
+    border-radius: 19px;
+    box-shadow: 0 7px 22px rgba(83, 42, 170, .22);
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    animation: menuHintFloat 2.2s ease-in-out infinite;
+}
+
+.menu-hint::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    right: 27px;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-top: 1.5px solid #8b61e8;
+    border-left: 1.5px solid #8b61e8;
+    transform: rotate(45deg);
+}
+
+.menu-hint-play {
+    flex: 0 0 38px;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    color: #fff;
+    background: #5425c8;
+    font-size: 14px;
+}
+
+.menu-hint-close {
+    position: absolute;
+    top: -9px;
+    left: -8px;
+    width: 21px;
+    height: 21px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: #fff;
+    background: #6f2cff;
+    font: 16px/21px Arial, sans-serif;
+    cursor: pointer;
+}
+
+.menu-hint-arrow {
+    position: absolute;
+    right: 12px;
+    top: -34px;
+    color: #5425c8;
+    font-family: Arial, sans-serif;
+    font-size: 27px;
+    transform: rotate(-72deg);
+    animation: menuHintPoint 1.1s ease-in-out infinite;
+}
+
+@keyframes menuHintFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+@keyframes menuHintPoint {
+    0%, 100% { transform: translate(0, 0) rotate(-72deg); }
+    50% { transform: translate(3px, -4px) rotate(-65deg); }
+}
+
+@media (max-width: 576px) {
+    .menu-hint {
+        top: 67px;
+        right: 0;
+        max-width: 255px;
+        padding: 10px 14px 10px 10px;
+        font-size: 14px;
+        gap: 8px;
+    }
+    .menu-hint-play {
+        flex-basis: 34px;
+        width: 34px;
+        height: 34px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .menu-hint, .menu-hint-arrow {
+        animation: none;
+    }
+}
