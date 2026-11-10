@@ -9,3 +9,9 @@ function closeMenu() {
     .getElementById("sidebar")
     .classList.remove("active");
 }
+
+function dismissMenuHint(event) {
+    event.stopPropagation();
+    const hint = document.getElementById("menuHint");
+    if (hint) hint.remove();
+}
