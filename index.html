@@ -82,11 +82,11 @@ Read authentic reviews and success stories from women who transformed their skil
 
         <center><b><h1>Real Success Stories 💜</h1></b></center><br><br>
 
-        <div id="googleDriveGallery" class="gallery-grid">
-            <div class="drive-gallery-loading">Loading success stories...</div>
+        <div id="firebaseGallery" class="gallery-grid">
+            <div class="gallery-loading">Loading success stories...</div>
         </div>
 
-        <div id="googleDriveGalleryError" class="drive-gallery-error" hidden>
+        <div id="firebaseGalleryError" class="gallery-error" hidden>
             Unable to load images right now. Please refresh the page.
         </div>
 
@@ -127,9 +127,11 @@ Video Gallery 💜
 </div>
 
 <script src="js/script.js"></script>
-<!-- Google Drive gallery fetching disabled: only Supabase uploads are displayed. -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase-config.js"></script>
+<!-- Firebase Firestore powers the public gallery. -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="js/firebase-config.js"></script>
 <script src="js/live-gallery.js"></script>
 
 </body>

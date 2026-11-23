@@ -1,6 +1,6 @@
 # Aish Fatima's Reviews — live upload add-on
 
-This project preserves the original `index.html`, `videos.html`, `css/style.css`, Google Drive scripts, CNAME, and existing visual layout. It adds an upload page and optional Supabase-backed live media gallery.
+This project preserves the original `index.html`, `videos.html`, `css/style.css`, Firebase/Cloudinary scripts, CNAME, and existing visual layout. It adds an upload page and optional Supabase-backed live media gallery.
 
 ## Before publishing
 1. Keep a backup of your current GitHub repository.
@@ -16,5 +16,5 @@ This project preserves the original `index.html`, `videos.html`, `css/style.css`
 - Gallery files in the public bucket are publicly viewable by design, because the request is to show them on a public website. Do not upload private content.
 - Authenticated accounts can upload and add metadata, so disable public sign-ups and keep only the intended client account. The SQL removes the delete policy from earlier drafts and creates no delete permission. For strict single-account authorization, use a dedicated role/claim policy before production use.
 - There is intentionally no delete policy in the starter.
-- Existing Google Drive galleries continue to load as before; Supabase uploads are appended to the appropriate gallery page. This preserves the original gallery source rather than replacing it.
+- Existing Firebase/Cloudinary galleries continue to load as before; Supabase uploads are appended to the appropriate gallery page. This preserves the original gallery source rather than replacing it.
 - Storage limits, file size limits and bandwidth depend on your Supabase plan. Large videos may need compression.
