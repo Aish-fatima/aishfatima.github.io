@@ -434,7 +434,7 @@ color:#6f2cff;
     50%{transform:scale(1.2);}
 }
 
-/* Google Drive Dynamic Gallery */
+/* Firebase/Cloudinary Dynamic Gallery */
 .google-drive-section {
     padding-top: 20px;
 }
@@ -455,9 +455,9 @@ color:#6f2cff;
     display: block;
 }
 
-.drive-gallery-loading,
+.gallery-loading,
 .drive-gallery-empty,
-.drive-gallery-error {
+.gallery-error {
     grid-column: 1 / -1;
     text-align: center;
     padding: 30px 15px;
@@ -466,16 +466,16 @@ color:#6f2cff;
 }
 
 /* VIDEO GALLERY DESIGN: 4 large thumbnails per row */
-#googleDriveVideoGallery.gallery-grid {
+#firebaseVideoGallery.gallery-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 24px;
 }
 
-#googleDriveVideoGallery .google-drive-video-item {
+#firebaseVideoGallery .google-drive-video-item {
     width: 100%;
 }
 
-#googleDriveVideoGallery .google-drive-video-preview {
+#firebaseVideoGallery .google-drive-video-preview {
     width: 100%;
     aspect-ratio: 16 / 9;
     background: #000;
@@ -483,58 +483,58 @@ color:#6f2cff;
 
 /* Video gallery responsive layout */
 @media (max-width: 992px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 576px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: 1fr;
     }
 }
 
 /* VIDEO GALLERY: match image-card sizing, 5 per row */
-#googleDriveVideoGallery.gallery-grid {
+#firebaseVideoGallery.gallery-grid {
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 18px;
 }
 
-#googleDriveVideoGallery .google-drive-video-item {
+#firebaseVideoGallery .google-drive-video-item {
     width: 100%;
 }
 
-#googleDriveVideoGallery .google-drive-video-preview {
+#firebaseVideoGallery .google-drive-video-preview {
     width: 100%;
     aspect-ratio: auto;
     background: #000;
 }
 
 @media (max-width: 1200px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 992px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 576px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 /* VIDEO GALLERY: exact image-card visual size, 5 per row */
-#googleDriveVideoGallery.gallery-grid {
+#firebaseVideoGallery.gallery-grid {
     grid-template-columns: repeat(5, 1fr);
     gap: 20px;
 }
 
-#googleDriveVideoGallery .google-drive-video-item {
+#firebaseVideoGallery .google-drive-video-item {
     width: 100%;
     border: 2px solid #6f2cff;
     border-radius: 10px;
@@ -542,7 +542,7 @@ color:#6f2cff;
     background: #fff;
 }
 
-#googleDriveVideoGallery .google-drive-video-preview {
+#firebaseVideoGallery .google-drive-video-preview {
     width: 100%;
     aspect-ratio: 9 / 16 !important;
     position: relative;
@@ -550,7 +550,7 @@ color:#6f2cff;
     background: #000;
 }
 
-#googleDriveVideoGallery .google-drive-video-preview iframe {
+#firebaseVideoGallery .google-drive-video-preview iframe {
     width: 100%;
     height: 100%;
     display: block;
@@ -558,13 +558,13 @@ color:#6f2cff;
 }
 
 @media (max-width: 992px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 576px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: 1fr;
     }
 }
@@ -575,14 +575,14 @@ color:#6f2cff;
    Match the portrait image-card footprint: 5 per row.
    ========================================================= */
 
-#googleDriveVideoGallery.gallery-grid {
+#firebaseVideoGallery.gallery-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 20px;
     align-items: start;
 }
 
-#googleDriveVideoGallery .google-drive-video-item {
+#firebaseVideoGallery .google-drive-video-item {
     width: 100%;
     min-width: 0;
     border: 2px solid #6f2cff;
@@ -591,7 +591,7 @@ color:#6f2cff;
     background: #fff;
 }
 
-#googleDriveVideoGallery .google-drive-video-preview {
+#firebaseVideoGallery .google-drive-video-preview {
     width: 100%;
     aspect-ratio: 9 / 16 !important;
     height: auto !important;
@@ -600,7 +600,7 @@ color:#6f2cff;
     background: #000;
 }
 
-#googleDriveVideoGallery .google-drive-video-preview iframe {
+#firebaseVideoGallery .google-drive-video-preview iframe {
     position: absolute !important;
     inset: 0 !important;
     width: 100% !important;
@@ -609,7 +609,7 @@ color:#6f2cff;
     display: block;
 }
 
-#googleDriveVideoGallery .google-drive-video-preview > button {
+#firebaseVideoGallery .google-drive-video-preview > button {
     position: absolute !important;
     inset: 0 !important;
     width: 100% !important;
@@ -618,39 +618,39 @@ color:#6f2cff;
 
 /* Keep five columns on normal desktop widths */
 @media (min-width: 1201px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 1200px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 992px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
 @media (max-width: 576px) {
-    #googleDriveVideoGallery.gallery-grid {
+    #firebaseVideoGallery.gallery-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
 
 /* VIDEO GALLERY SIZE FIX */
-#googleDriveVideoGallery {
+#firebaseVideoGallery {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 20px;
     align-items: start;
 }
 
-#googleDriveVideoGallery .gallery-item {
+#firebaseVideoGallery .gallery-item {
     width: 100%;
     aspect-ratio: 9 / 16;
     border: 2px solid #6f2cff;
@@ -659,7 +659,7 @@ color:#6f2cff;
     background: #000;
 }
 
-#googleDriveVideoGallery .gallery-item video {
+#firebaseVideoGallery .gallery-item video {
     width: 100%;
     height: 100%;
     display: block;
@@ -668,13 +668,13 @@ color:#6f2cff;
 }
 
 @media (max-width: 992px) {
-    #googleDriveVideoGallery {
+    #firebaseVideoGallery {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 576px) {
-    #googleDriveVideoGallery {
+    #firebaseVideoGallery {
         grid-template-columns: repeat(2, 1fr);
     }
 }
