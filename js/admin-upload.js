@@ -1,60 +1,413 @@
-(function(){
- const status=document.getElementById('status'), loginForm=document.getElementById('loginForm'), uploadArea=document.getElementById('uploadArea'), setupWarning=document.getElementById('setupWarning'), mediaList=document.getElementById('mediaList'), mediaControls=document.getElementById('mediaControls'), selectAll=document.getElementById('selectAllMedia'), deleteSelectedBtn=document.getElementById('deleteSelectedBtn');
- const url=window.SUPABASE_URL, key=window.SUPABASE_ANON_KEY;
- if(!window.supabase||!url||!key||url.includes('PASTE_')||key.includes('PASTE_')){setupWarning.classList.remove('hidden');setupWarning.textContent='Setup required: add your Supabase Project URL and publishable/anon key in js/supabase-config.js.';loginForm.querySelector('button').disabled=true;return;}
- const client=window.supabase.createClient(url,key);
- function say(s){status.textContent=s;}
- function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
- function syncSelection(){
-   const checks=[...mediaList.querySelectorAll('.media-select')];
-   const selected=checks.filter(c=>c.checked).length;
-   deleteSelectedBtn.disabled=selected===0;
-   deleteSelectedBtn.textContent=selected ? 'Delete selected ('+selected+')' : 'Delete selected';
-   selectAll.checked=checks.length>0 && selected===checks.length;
-   selectAll.indeterminate=selected>0 && selected<checks.length;
- }
- async function deleteItems(items){
-   if(!items.length)return;
-   const label=items.length===1?'this item':items.length+' selected items';
-   if(!window.confirm('Permanently delete '+label+' from the live gallery? This cannot be undone.'))return;
-   say('Deleting '+items.length+' item(s)…');
-   deleteSelectedBtn.disabled=true;
-   const {error:storageError}=await client.storage.from('gallery-media').remove(items.map(x=>x.storage_path));
-   if(storageError){say('Could not delete storage file(s): '+storageError.message+' Check the Storage delete policy.');syncSelection();return;}
-   const ids=items.map(x=>Number(x.id));
-   const {error:rowError}=await client.from('gallery_media').delete().in('id',ids);
-   if(rowError){say('Storage files were removed, but gallery records could not be deleted: '+rowError.message+' Check the table DELETE policy.');await loadMedia();return;}
-   say('Deleted '+items.length+' item(s) successfully.');
-   await loadMedia();
- }
- async function loadMedia(){
-   mediaList.innerHTML='<p class="text-muted">Loading media…</p>';
-   const {data,error}=await client.from('gallery_media').select('id,name,storage_path,media_type,created_at').order('created_at',{ascending:false});
-   if(error){mediaControls.classList.add('hidden');mediaList.innerHTML='<p class="text-danger">Could not load media: '+escapeHtml(error.message)+'</p>';return;}
-   if(!data.length){mediaControls.classList.add('hidden');mediaList.innerHTML='<p class="text-muted">No uploaded photos or videos yet.</p>';return;}
-   mediaControls.classList.remove('hidden');
-   selectAll.checked=false;selectAll.indeterminate=false;
-   mediaList.innerHTML=data.map(item=>'<div class="media-item"><div class="media-name"><label><input type="checkbox" class="form-check-input media-select" data-id="'+item.id+'" aria-label="Select '+escapeHtml(item.name)+'"> <span class="badge text-bg-light me-1">'+(item.media_type==='video'?'Video':'Photo')+'</span>'+escapeHtml(item.name)+'</label></div><button type="button" class="btn btn-outline-danger btn-sm delete-btn" data-id="'+item.id+'" data-path="'+escapeHtml(item.storage_path)+'" data-name="'+escapeHtml(item.name)+'">Delete</button></div>').join('');
-   mediaList.querySelectorAll('.media-select').forEach(c=>c.addEventListener('change',syncSelection));
-   mediaList.querySelectorAll('.delete-btn').forEach(btn=>btn.addEventListener('click',async()=>{
-     const item=data.find(x=>String(x.id)===btn.dataset.id);
-     if(item)await deleteItems([item]);
-   }));
-   syncSelection();
- }
- selectAll.addEventListener('change',()=>{mediaList.querySelectorAll('.media-select').forEach(c=>c.checked=selectAll.checked);syncSelection();});
- deleteSelectedBtn.addEventListener('click',async()=>{
-   const ids=[...mediaList.querySelectorAll('.media-select:checked')].map(c=>Number(c.dataset.id));
-   const {data,error}=await client.from('gallery_media').select('id,name,storage_path,media_type').in('id',ids);
-   if(error){say('Could not identify selected media: '+error.message);return;}
-   await deleteItems(data||[]);
- });
- async function refresh(){const {data:{session}}=await client.auth.getSession();loginForm.classList.toggle('hidden',!!session);uploadArea.classList.toggle('hidden',!session);if(session)await loadMedia();else {mediaControls.classList.add('hidden');mediaList.innerHTML='<p class="text-muted">Log in to view uploaded media.</p>';}}
- loginForm.addEventListener('submit',async e=>{e.preventDefault();say('Signing in…');const {error}=await client.auth.signInWithPassword({email:document.getElementById('email').value.trim(),password:document.getElementById('password').value});if(error){say('Login failed: '+error.message);return;}say('Signed in.');await refresh();});
- document.getElementById('logoutBtn').addEventListener('click',async()=>{await client.auth.signOut();say('Logged out.');await refresh();});
- document.getElementById('uploadForm').addEventListener('submit',async e=>{e.preventDefault();const {data:{session}}=await client.auth.getSession();if(!session){say('Please log in again.');await refresh();return;}const files=[...document.getElementById('mediaFiles').files];if(!files.length)return;say('Uploading '+files.length+' file(s)…');let done=0;
- for(const file of files){try{if(!file.type.startsWith('image/')&&!file.type.startsWith('video/'))throw new Error('Only image/video files are supported.');const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const path=Date.now()+'-'+crypto.randomUUID()+'-'+safeName;const {error:upErr}=await client.storage.from('gallery-media').upload(path,file,{contentType:file.type,upsert:false});if(upErr)throw upErr;const {data:{publicUrl}}=client.storage.from('gallery-media').getPublicUrl(path);const {error:dbErr}=await client.from('gallery_media').insert({name:file.name,storage_path:path,public_url:publicUrl,media_type:file.type.startsWith('video/')?'video':'image'});if(dbErr)throw dbErr;done++;say('Uploaded '+done+' of '+files.length+'…');}catch(err){say('Stopped after '+done+' file(s). Error: '+err.message+'\nIf file uploaded but database insert failed, it may remain in storage and need cleanup.');return;}}
- document.getElementById('uploadForm').reset();say('Success! '+done+' file(s) published.');await loadMedia();
- });
- refresh();
+(function () {
+  "use strict";
+
+  const auth = window.firebaseAuth;
+  const db = window.firebaseDb;
+  const ADMIN_UID = window.FEEDBACK_ADMIN_UID;
+  const WORKER_URL = window.FEEDBACK_UPLOAD_WORKER_URL;
+  const CLOUD_NAME = window.FEEDBACK_CLOUDINARY_CLOUD_NAME;
+
+  const $ = (id) => document.getElementById(id);
+  const status = $("status");
+  const loginForm = $("loginForm");
+  const uploadArea = $("uploadArea");
+  const setupWarning = $("setupWarning");
+  const mediaList = $("mediaList");
+  const mediaControls = $("mediaControls");
+  const selectAll = $("selectAllMedia");
+  const deleteSelectedBtn = $("deleteSelectedBtn");
+  const uploadButton = document.querySelector('#uploadForm button[type="submit"]');
+  const progressWrap = $("uploadProgressWrap");
+  const progressBar = $("uploadProgressBar");
+
+  function say(message, isError) {
+    status.textContent = message;
+    status.classList.toggle("text-danger", !!isError);
+    status.classList.toggle("text-success", !isError);
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
+      return {
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c];
+    });
+  }
+
+  function isAdmin(user) {
+    return !!user && user.uid === ADMIN_UID;
+  }
+
+  function showProgress(value) {
+    const percent = Math.max(0, Math.min(100, Math.round(value)));
+    progressWrap.classList.remove("hidden");
+    progressBar.style.width = percent + "%";
+    progressBar.textContent = percent + "%";
+    progressBar.setAttribute("aria-valuenow", String(percent));
+  }
+
+  function hideProgress() {
+    progressWrap.classList.add("hidden");
+    progressBar.style.width = "0%";
+    progressBar.textContent = "0%";
+    progressBar.setAttribute("aria-valuenow", "0");
+  }
+
+  function showSetupError(message) {
+    setupWarning.classList.remove("hidden");
+    setupWarning.textContent = message;
+    loginForm.querySelector('button[type="submit"]').disabled = true;
+  }
+
+  async function workerRequest(payload) {
+    if (!isAdmin(auth && auth.currentUser)) {
+      throw new Error("Only the authorized administrator can perform this action.");
+    }
+
+    const token = await auth.currentUser.getIdToken(true);
+    const response = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json().catch(function () { return {}; });
+    if (!response.ok) {
+      throw new Error(data.error || "Secure media service error (" + response.status + ").");
+    }
+    return data;
+  }
+
+  function syncSelection() {
+    const checks = Array.from(mediaList.querySelectorAll(".media-select"));
+    const selected = checks.filter(function (checkbox) { return checkbox.checked; }).length;
+    deleteSelectedBtn.disabled = selected === 0;
+    deleteSelectedBtn.textContent = selected
+      ? "Delete selected (" + selected + ")"
+      : "Delete selected";
+    selectAll.checked = checks.length > 0 && selected === checks.length;
+    selectAll.indeterminate = selected > 0 && selected < checks.length;
+  }
+
+  async function loadMedia() {
+    mediaList.innerHTML = '<p class="text-muted">Loading media…</p>';
+
+    try {
+      const snapshot = await db.collection("gallery_media")
+        .orderBy("createdAt", "desc")
+        .get();
+      const items = snapshot.docs.map(function (doc) {
+        return Object.assign({ id: doc.id }, doc.data());
+      });
+
+      if (!items.length) {
+        mediaControls.classList.add("hidden");
+        mediaList.innerHTML = '<p class="text-muted">No uploaded photos or videos yet.</p>';
+        return;
+      }
+
+      mediaControls.classList.remove("hidden");
+      selectAll.checked = false;
+      selectAll.indeterminate = false;
+
+      mediaList.innerHTML = items.map(function (item) {
+        const kind = item.resourceType === "video" ? "Video" : "Photo";
+        return '<div class="media-item">' +
+          '<div class="media-name"><label><input type="checkbox" class="form-check-input media-select" data-id="' +
+          escapeHtml(item.id) + '"> <span class="badge text-bg-light me-1">' + kind + '</span>' +
+          escapeHtml(item.fileName || item.name || item.publicId || "Media") +
+          '</label></div><button type="button" class="btn btn-outline-danger btn-sm delete-btn" data-id="' +
+          escapeHtml(item.id) + '">Delete</button></div>';
+      }).join("");
+
+      mediaList.querySelectorAll(".media-select").forEach(function (checkbox) {
+        checkbox.addEventListener("change", syncSelection);
+      });
+      mediaList.querySelectorAll(".delete-btn").forEach(function (button) {
+        button.addEventListener("click", async function () {
+          const item = items.find(function (entry) { return entry.id === button.dataset.id; });
+          if (item) await deleteItems([item]);
+        });
+      });
+      syncSelection();
+    } catch (error) {
+      mediaControls.classList.add("hidden");
+      mediaList.innerHTML =
+        '<p class="text-danger">Could not load media: ' + escapeHtml(error.message) + '</p>';
+    }
+  }
+
+  async function deleteItems(items) {
+    if (!items.length) return;
+
+    const label = items.length === 1 ? "this item" : items.length + " selected items";
+    if (!window.confirm(
+      "Permanently delete " + label + " from Cloudinary and the live gallery? This cannot be undone."
+    )) return;
+
+    deleteSelectedBtn.disabled = true;
+    let deleted = 0;
+
+    say("Deleting " + items.length + " item(s)…");
+    for (const item of items) {
+      try {
+        if (!item.publicId || !["image", "video"].includes(item.resourceType)) {
+          throw new Error("This gallery record is missing its Cloudinary deletion details.");
+        }
+
+        await workerRequest({
+          action: "delete",
+          resourceType: item.resourceType,
+          publicId: item.publicId
+        });
+
+        await db.collection("gallery_media").doc(item.id).delete();
+        deleted++;
+      } catch (error) {
+        say(
+          "Deleted " + deleted + " of " + items.length +
+          ". Could not delete the remaining item(s): " + error.message,
+          true
+        );
+        await loadMedia();
+        return;
+      }
+    }
+
+    say("Deleted " + deleted + " item(s) successfully.");
+    await loadMedia();
+  }
+
+  selectAll.addEventListener("change", function () {
+    mediaList.querySelectorAll(".media-select").forEach(function (checkbox) {
+      checkbox.checked = selectAll.checked;
+    });
+    syncSelection();
+  });
+
+  deleteSelectedBtn.addEventListener("click", async function () {
+    const ids = Array.from(mediaList.querySelectorAll(".media-select:checked"))
+      .map(function (checkbox) { return checkbox.dataset.id; });
+
+    try {
+      const items = [];
+      for (const id of ids) {
+        const doc = await db.collection("gallery_media").doc(id).get();
+        if (doc.exists) items.push(Object.assign({ id: doc.id }, doc.data()));
+      }
+      await deleteItems(items);
+    } catch (error) {
+      say("Could not identify selected media: " + error.message, true);
+    }
+  });
+
+  async function refresh(user) {
+    if (user && !isAdmin(user)) {
+      await auth.signOut();
+      loginForm.classList.remove("hidden");
+      uploadArea.classList.add("hidden");
+      say("This account is not authorized to access the admin dashboard.", true);
+      return;
+    }
+
+    loginForm.classList.toggle("hidden", !!user);
+    uploadArea.classList.toggle("hidden", !user);
+
+    if (user) {
+      await loadMedia();
+    } else {
+      mediaControls.classList.add("hidden");
+      mediaList.innerHTML = '<p class="text-muted">Log in to view uploaded media.</p>';
+    }
+  }
+
+  loginForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+    say("Signing in…");
+
+    try {
+      const result = await auth.signInWithEmailAndPassword(
+        $("email").value.trim(),
+        $("password").value
+      );
+
+      if (!isAdmin(result.user)) {
+        await auth.signOut();
+        throw new Error("This account is not the authorized administrator.");
+      }
+
+      say("Signed in successfully.");
+      await refresh(result.user);
+    } catch (error) {
+      say("Login failed: " + error.message, true);
+    }
+  });
+
+  $("logoutBtn").addEventListener("click", async function () {
+    await auth.signOut();
+    hideProgress();
+    say("Logged out.");
+    await refresh(null);
+  });
+
+  function uploadToCloudinary(file, signed, onProgress) {
+    return new Promise(function (resolve, reject) {
+      const xhr = new XMLHttpRequest();
+      const form = new FormData();
+
+      form.append("file", file);
+      form.append("api_key", signed.apiKey);
+      form.append("timestamp", String(signed.timestamp));
+      form.append("folder", signed.folder);
+      form.append("signature", signed.signature);
+
+      xhr.open(
+        "POST",
+        "https://api.cloudinary.com/v1_1/" +
+          encodeURIComponent(CLOUD_NAME) + "/" + signed.resourceType + "/upload"
+      );
+
+      xhr.upload.onprogress = function (event) {
+        if (event.lengthComputable) onProgress(event.loaded / event.total * 100);
+      };
+
+      xhr.onload = function () {
+        let data = {};
+        try { data = JSON.parse(xhr.responseText || "{}"); } catch (_) {}
+
+        if (xhr.status >= 200 && xhr.status < 300) {
+          if (!data.secure_url || !data.public_id) {
+            reject(new Error("Cloudinary response is missing the uploaded file details."));
+          } else {
+            resolve(data);
+          }
+        } else {
+          reject(new Error(
+            data.error && data.error.message
+              ? data.error.message
+              : "Cloudinary upload failed (" + xhr.status + ")."
+          ));
+        }
+      };
+
+      xhr.onerror = function () {
+        reject(new Error("Network error while uploading to Cloudinary."));
+      };
+
+      xhr.send(form);
+    });
+  }
+
+  $("uploadForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const files = Array.from($("mediaFiles").files || []);
+    if (!files.length) return;
+
+    if (!isAdmin(auth.currentUser)) {
+      say("Please sign in with the authorized admin account again.", true);
+      return;
+    }
+
+    uploadButton.disabled = true;
+    let completed = 0;
+
+    try {
+      for (const file of files) {
+        const resourceType = file.type.startsWith("video/")
+          ? "video"
+          : file.type.startsWith("image/") ? "image" : "";
+
+        if (!resourceType) {
+          throw new Error(file.name + ": only image/video files are supported.");
+        }
+
+        say("Preparing secure upload for " + file.name + "…");
+        showProgress(0);
+
+        const signed = await workerRequest({
+          action: "sign-upload",
+          resourceType: resourceType
+        });
+
+        if (
+          !signed.signature || !signed.apiKey || !signed.timestamp ||
+          !signed.folder || signed.resourceType !== resourceType
+        ) {
+          throw new Error("Secure upload service returned incomplete signing details.");
+        }
+
+        const uploaded = await uploadToCloudinary(file, signed, showProgress);
+
+        const metadata = {
+          name: file.name,
+          fileName: file.name,
+          mediaUrl: uploaded.secure_url,
+          publicUrl: uploaded.secure_url,
+          publicId: uploaded.public_id,
+          resourceType: uploaded.resource_type || resourceType,
+          fileType: file.type || "",
+          format: uploaded.format || "",
+          bytes: uploaded.bytes || file.size,
+          folder: signed.folder,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (uploaded.width) metadata.width = uploaded.width;
+        if (uploaded.height) metadata.height = uploaded.height;
+        if (uploaded.duration) metadata.duration = uploaded.duration;
+
+        try {
+          await db.collection("gallery_media").add(metadata);
+        } catch (databaseError) {
+          // Remove the Cloudinary asset if metadata could not be published.
+          let cleanupMessage = "";
+          try {
+            await workerRequest({
+              action: "delete",
+              resourceType: resourceType,
+              publicId: uploaded.public_id
+            });
+          } catch (cleanupError) {
+            cleanupMessage = " Cleanup also failed; keep this Cloudinary asset for manual review.";
+          }
+
+          throw new Error(
+            "Cloudinary upload completed, but Firestore could not save its metadata: " +
+            databaseError.message + cleanupMessage
+          );
+        }
+
+        completed++;
+        say("Uploaded " + completed + " of " + files.length + " file(s)…");
+      }
+
+      $("uploadForm").reset();
+      hideProgress();
+      say("Success! " + completed + " file(s) uploaded and published.");
+      await loadMedia();
+    } catch (error) {
+      say("Upload stopped after " + completed + " successful file(s): " + error.message, true);
+      hideProgress();
+      await loadMedia();
+    } finally {
+      uploadButton.disabled = false;
+    }
+  });
+
+  if (!auth || !db || !ADMIN_UID || !WORKER_URL || !CLOUD_NAME) {
+    showSetupError(
+      "Firebase or secure upload configuration is missing. Check Firebase SDKs and js/firebase-config.js."
+    );
+    return;
+  }
+
+  auth.onAuthStateChanged(function (user) {
+    refresh(user).catch(function (error) {
+      say("Dashboard error: " + error.message, true);
+    });
+  });
 })();
